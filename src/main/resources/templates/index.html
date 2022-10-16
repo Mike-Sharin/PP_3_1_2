@@ -1,11 +1,29 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Spring Security Example</title>
 </head>
 <body>
-<h1>Welcome to Index PAGE!</h1>
+<h1>Добро пожаловать на первоначальную страницу!</h1>
 
+<td>
+    <span th:if="${login == ''}">
+        Для входа на сайт <a href="/login">Авторизуйтесь</a>
+    </span>
+    <span th:unless="${login == ''}">
+        <p>
+            Вы авторизованы как <span style="font-weight:bold" th:text="${login.toUpperCase()}">VALUE</span>!
+        </p>
+        <br>
+        <form th:action="@{/logout}" method="POST">
+            <input type="submit" value="Выход"/>
+        </form>
+    </span>
+</td>
 
 </body>
 </html>

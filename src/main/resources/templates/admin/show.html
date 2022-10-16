@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Info user</title>
+</head>
+<style>
+  form { display : inline-block; }
+</style>
+<body>
+
+<h1>Информация о пользователе</h1>
+
+<hr/>
+<br/>
+<label style="font-weight:bold">Login : </label><label th:text="${user.getLogin()}">VALUE</label>
+<br/><br/>
+<label style="font-weight:bold">Имя : </label><label th:text="${user.getName()}">VALUE</label>
+<br/><br/>
+<label style="font-weight:bold">Электронная почта : </label><label th:text="${user.getEmail()}">VALUE</label>
+<br/><br/>
+<label style="font-weight:bold">Роли : </label>
+<ul th:each="role:${user.getRoles()}">
+  <td th:text="${role.getName()}">VALUE</td>
+  <br>
+</ul>
+<hr/>
+<br/>
+<a th:href="@{/admin/{id}/edit(id=${user.getId()})}">
+  <input type="submit" value="Изменить"/>
+</a>
+<br/><br/>
+<form th:method="DELETE" th:action="@{/admin/{id}(id=${user.getId()})}">
+  <input style="background: red" type="submit" value="Удалить"/>
+</form>
+<br/>
+<br/>
+
+<a href="/admin">К списку пользователей</a>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/html"
+      lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit password</title>
+</head>
+<body>
+
+<h1>Редактирование пароля</h1>
+
+<hr/>
+
+<form th:method="PATCH" th:action="@{/admin/{id}/pass(id=${user.getId()})}" th:object="${user}">
+    <div>
+        <br/>
+        <input type="hidden" th:field="*{login}" th:value="${user.getLogin()}"/>
+        <input type="hidden" th:field="*{name}" th:value="${user.getName()}"/>
+        <input type="hidden" th:field="*{email}" th:value="${user.getEmail()}"/>
+        <input type="hidden" th:field="*{roles}" th:value="${user.getRoles()}"/>
+
+        <label for="pass" >Введите пароль:</label>
+        <input type="password" th:field="*{pass}" id="pass"/>
+        <div style="color:red" th:if="${#fields.hasErrors('pass')}" th:errors="*{pass}">Pass error</div>
+
+        <br/><br/>
+
+        <input type="submit" value="Обновить">
+    </div>
+</form>
+
+<br/>
+<hr/>
+<br/>
+
+<a href="/admin">К списку пользователей</a>
+
+</body>
+</html>

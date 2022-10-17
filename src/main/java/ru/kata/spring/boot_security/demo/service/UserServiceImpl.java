@@ -5,10 +5,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.dao.UserDao;
-import ru.kata.spring.boot_security.demo.dao.UserRepository;
+import ru.kata.spring.boot_security.demo.repository.UserRepository;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import java.util.Collection;
@@ -17,65 +17,48 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
-
-    private final UserDao userDao;
     private final UserRepository userRepository;
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, UserRepository userRepository) {
-        this.userDao = userDao;
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public List<User> getAllUsers() {
-        return userDao.findAllUser();
-    }
-
-    @Transactional
-    @Override
-    public void addUser(User user) {
-        userDao.createUser(user);
-    }
-
-    @Transactional
-    @Override
-    public void editUser(User user) {
-        userDao.updateUser(user);
-    }
-
-    @Transactional
-    @Override
-    public void editPass(User user) {
-        userDao.updatePass(user);
-    }
-
-    @Transactional
-    @Override
-    public void removeUser(Long id) {
-        userDao.deleteUser(id);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public User findUser(Long id) {
-        return userDao.findUser(id);
+    public void addUser(User user) { //void
+        user.setPass("{bcrypt}" + new BCryptPasswordEncoder().encode(user.getPass()));
+        userRepository.saveAndFlush(user);
     }
 
     @Override
-    public User findUser(String login) {
-        return userDao.findUser(login);
+    public void delete(long id) {
+        userRepository.deleteById(id);
     }
 
-    public User findByLogin(String surname) {
-        return userRepository.findByLogin(surname);
+    @Override
+    public User getByLogin(String login) {
+        return userRepository.findByLogin(login);
+    }
+
+    @Override
+    public void editUser(User user) { //void
+        userRepository.saveAndFlush(user);
+    }
+
+    @Override
+    public List<User> getAll() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public User getById(Long id) {
+        return userRepository.getById(id);
     }
 
     @Transactional
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findByLogin(username);
+        User user = userRepository.findByLogin(username);
         if (user == null) {
             throw new UsernameNotFoundException(String.format("Пользователь '%s' не найден", username));
         }
@@ -86,10 +69,5 @@ public class UserServiceImpl implements UserService {
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
         return roles.stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Role>  findRoles() {
-        return userDao.findRoles();
     }
 }

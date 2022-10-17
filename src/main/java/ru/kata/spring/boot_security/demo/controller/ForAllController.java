@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.security.Principal;
 
 @Controller
-public class OtherController {
+public class ForAllController {
 
     @GetMapping()
     public String index(Model model, Principal principal){

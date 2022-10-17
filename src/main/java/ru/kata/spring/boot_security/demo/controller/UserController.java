@@ -4,7 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.service.UserService;
-
 import java.security.Principal;
 
 @Controller
@@ -18,7 +17,7 @@ public class UserController {
 
     @GetMapping()
     public String listUsers(Model model, Principal principal){
-        model.addAttribute("user", userService.findUser(principal.getName()));
+        model.addAttribute("user", userService.getByLogin(principal.getName()));
         return "user";
     }
 

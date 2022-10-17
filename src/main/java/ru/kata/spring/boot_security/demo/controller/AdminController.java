@@ -8,6 +8,7 @@ import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -20,8 +21,9 @@ public class AdminController {
     }
 
     @GetMapping()
-    public String listUsers(Model model){
+    public String listUsers(Model model, Principal principal){
         model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("authorization", principal.getName());
         return "/admin/list";
     }
 
@@ -43,9 +45,10 @@ public class AdminController {
     }
 
     @GetMapping("/{id}")
-    public String show(@PathVariable("id") Long id, Model model) {
+    public String show(@PathVariable("id") Long id, Model model, Principal principal) {
         User user = userService.findUser(id);
         model.addAttribute("user", user);
+        model.addAttribute("disabledButtonDelete", (user.getLogin().equals(principal.getName())));
         return "/admin/show";
     }
 

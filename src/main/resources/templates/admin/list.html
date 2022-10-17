@@ -40,7 +40,7 @@
             <a th:href="@{/admin/{id}/edit(id=${user.getId()})}">
                 <input type="submit" value="Редактировать"/>
             </a>
-            <form th:method="DELETE" th:action="@{/admin/{id}(id=${user.getId()})}">
+            <form th:method="DELETE" th:action="@{/admin/{id}(id=${user.getId()})}" th:disabled="${user.getLogin() == authorization}">
                 <input type="submit" value="Удалить"/>
             </form>
         </td>

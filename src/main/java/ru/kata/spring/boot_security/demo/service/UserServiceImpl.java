@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public User getByLogin(String login) {
         return userRepository.findByLogin(login);
@@ -45,17 +46,19 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAndFlush(user);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<User> getAll() {
         return userRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public User getById(Long id) {
         return userRepository.getById(id);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByLogin(username);

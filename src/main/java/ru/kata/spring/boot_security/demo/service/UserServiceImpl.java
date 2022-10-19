@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addUser(User user) { //void
+    public void addUser(User user) {
         user.setPass("{bcrypt}" + new BCryptPasswordEncoder().encode(user.getPass()));
         userRepository.saveAndFlush(user);
     }
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void editUser(User user) { //void
+    public void editUser(User user) {
         userRepository.saveAndFlush(user);
     }
 

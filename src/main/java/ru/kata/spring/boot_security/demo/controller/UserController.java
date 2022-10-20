@@ -17,9 +17,8 @@ public class UserController {
 
     @GetMapping()
     public String listUsers(Model model, Principal principal){
-        model.addAttribute("user", userService.getByLogin(principal.getName()));
-        return "user";
+        model.addAttribute("authorizedUser", userService.getByEmail(principal.getName()));
+        return "userPage";
     }
-
 }
 

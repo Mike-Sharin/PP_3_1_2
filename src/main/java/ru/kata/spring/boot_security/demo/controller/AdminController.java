@@ -10,11 +10,10 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
-import javax.annotation.PostConstruct;
+
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 @RequestMapping("/admin")
@@ -30,100 +29,147 @@ public class AdminController {
         this.roleService = roleService;
     }
 
-    @PostConstruct
-    private void postConstruct() {
-        User userAdmin = new User("admin", "admin adminson","{bcrypt}$2y$10$jVUYWcfz0sKXCcwpEIevYun/25kEJc1IhDzMFpRZyNMjkdtzUdW0m","admin@ya.ru");
-        User userUser = new User ("user", "user userson","{bcrypt}$2y$10$CjJY6WUmRcavi6a4iSqCdOfMk77B.vrhPhyKzJE.QPeQNh.b2Mvi.", "user@ya.ru");
-
-        Role roleAdmin = new Role("ROLE_ADMIN");
-        Role roleUser = new Role("ROLE_USER");
-
-        Set<Role> setAdmin = new HashSet<>();
-        setAdmin.add(roleAdmin);
-        setAdmin.add(roleUser);
-
-        Set<Role> setUser = new HashSet<>();
-        setUser.add(roleUser);
-
-        userAdmin.setRoles(setAdmin);
-        userUser.setRoles(setUser);
-
-        roleService.addRole(roleAdmin);
-        roleService.addRole(roleUser);
-
-        userService.editUser(userAdmin);
-        userService.editUser(userUser);
-    }
+//    @PostConstruct
+//    private void postConstruct() {
+//        User userAdmin = new User("admin_name", "adminson", (byte)  25, "admin", "admin@ya.ru");
+//        User userUser = new User("user_name", "userson", (byte) 35, "user", "user@ya.ru");
+//
+//        Role roleAdmin = new Role("ROLE_ADMIN");
+//        Role roleUser = new Role("ROLE_USER");
+//
+//        Set<Role> setAdmin = new HashSet<>();
+//        setAdmin.add(roleAdmin);
+//        setAdmin.add(roleUser);
+//
+//        Set<Role> setUser = new HashSet<>();
+//        setUser.add(roleUser);
+//
+//        userAdmin.setRoles(setAdmin);
+//        userUser.setRoles(setUser);
+//
+//        roleService.addRole(roleAdmin);
+//        roleService.addRole(roleUser);
+//
+//        userService.addUser(userAdmin);
+//        userService.addUser(userUser);
+//    }
 
     @GetMapping()
     public String listUsers(Model model, Principal principal){
-        model.addAttribute("users", userService.getAll());
-        model.addAttribute("authorization", principal.getName());
-        return "/admin/list";
-    }
+        List<User> listUsers = userService.getAll();
+        User authorizedUser = userService.getByEmail(principal.getName());
+        List<Role> listRoles = roleRepository.findAll();
 
-    @GetMapping("/new")
-    public String newUser(@ModelAttribute("user") User user, Model model) {
-        model.addAttribute("roles", roleRepository.findAll());
-        return "/admin/new";
-    }
+        System.out.println("_____________________________________________________________________________________________");
+        System.out.println("_____________________________________________________________________________________________");
+        System.out.println(listUsers);
+        System.out.println("____________________________");
+        System.out.println(authorizedUser);
+        System.out.println("____________________________");
+        System.out.println(listRoles);
+        System.out.println("____________________________");
 
-    @PostMapping()
-    public String create(@ModelAttribute("user") @Valid User user,
-                         BindingResult bindingResult, Model model) {
-        model.addAttribute("roles", roleRepository.findAll());
-        if (userService.getByLogin(user.getLogin()) != null) {
-            bindingResult.rejectValue("login", "error.login", "Пользователь с таким логином уже существует" );
-        }
-        if(bindingResult.hasErrors()) {
-            return "/admin/new";
-        }
-        userService.addUser(user);
-        return "redirect:/admin";
-    }
+        System.out.println(authorizedUser.getRoles().contains("ROLE_ADMIN"));
+        System.out.println(authorizedUser.getRoles().stream().filter(o -> o.getName().equals("ROLE_ADMIN")).findFirst().isPresent());
+        System.out.println(authorizedUser.getRoles().stream().filter(o -> o.getName().equals("ROLE_ADMIN")).findFirst());
+        System.out.println(authorizedUser.getRoles().stream().filter(o -> o.getName().equals("ROLE_ADMIN")));
+        System.out.println("_____________________________________________________________________________________________");
+        System.out.println("_____________________________________________________________________________________________");
+        model.addAttribute("listUsers", listUsers);
+        model.addAttribute("authorizedUser", authorizedUser);
+        model.addAttribute("accessAdministrator", authorizedUser.getRoles().stream().filter(o -> o.getName().equals("ROLE_ADMIN")).findFirst().isPresent());
+        model.addAttribute("listRoles", listRoles);
 
-    @GetMapping("/{id}")
-    public String show(@PathVariable("id") Long id, Model model, Principal principal) {
-        User user = userService.getById(id);
-        model.addAttribute("user", user);
-        model.addAttribute("disabledButtonDelete", (user.getLogin().equals(principal.getName())));
-        return "/admin/show";
-    }
-
-    @GetMapping("/{id}/edit")
-    public String edit(Model model, @PathVariable("id") Long id) {
-        User user = userService.getById(id);
-        model.addAttribute("user", user);
-        model.addAttribute("roles", roleRepository.findAll());
-        return "/admin/edit";
+        return "adminPagee";
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, Model model) {
+    public void update(@ModelAttribute("userEdit") @Valid User user, BindingResult bindingResult, Model model) {
         if(bindingResult.hasErrors()) {
             model.addAttribute("roles", roleRepository.findAll());
-            return "/admin/edit";
+         //   return "/admin/edit";
         }
         userService.editUser(user);
-        return  "redirect:/admin";
+      //  return  "redirect:/admin";
     }
 
-    @PatchMapping("/{id}/pass")
-    public String updatePass(@ModelAttribute("user") User user) {
-        userService.addUser(user);
-        return  "redirect:/admin";
+    @GetMapping("/{id}")
+    public void show(@PathVariable("id") Long id, Model model, Principal principal) {
+        User user = userService.getById(id);
+        model.addAttribute("user", user);
+        model.addAttribute("disabledButtonDelete", (user.getEmail().equals(principal.getName())));
+        //return "/admin/show";
     }
 
-    @GetMapping("/{id}/pass")
-    public String editPass(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("user", userService.getById(id));
-        model.addAttribute("roles", roleRepository.findAll());
-        return  "/admin/pass";
-    }
-
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") Long id) {
-        userService.delete(id);
-        return "redirect:/admin";
-    }
+//    @GetMapping()
+//    public String listUsers(Model model, Principal principal){
+//        model.addAttribute("users", userService.getAll());
+//        model.addAttribute("authorization", principal.getName());
+//        return "/admin/list";
+//    }
+//
+//    @GetMapping("/new")
+//    public String newUser(@ModelAttribute("user") User user, Model model) {
+//        model.addAttribute("roles", roleRepository.findAll());
+//        return "/admin/new";
+//    }
+//
+//    @PostMapping()
+//    public String create(@ModelAttribute("user") @Valid User user,
+//                         BindingResult bindingResult, Model model) {
+//        model.addAttribute("roles", roleRepository.findAll());
+//        if (userService.getByLogin(user.getEmail()) != null) {
+//            bindingResult.rejectValue("login", "error.login", "Пользователь с таким логином уже существует" );
+//        }
+//        if(bindingResult.hasErrors()) {
+//            return "/admin/new";
+//        }
+//        userService.addUser(user);
+//        return "redirect:/admin";
+//    }
+//
+//    @GetMapping("/{id}")
+//    public String show(@PathVariable("id") Long id, Model model, Principal principal) {
+//        User user = userService.getById(id);
+//        model.addAttribute("user", user);
+//        model.addAttribute("disabledButtonDelete", (user.getEmail().equals(principal.getName())));
+//        return "/admin/show";
+//    }
+//
+//    @GetMapping("/{id}/edit")
+//    public String edit(Model model, @PathVariable("id") Long id) {
+//        User user = userService.getById(id);
+//        model.addAttribute("user", user);
+//        model.addAttribute("roles", roleRepository.findAll());
+//        return "/admin/edit";
+//    }
+//
+//    @PatchMapping("/{id}")
+//    public String update(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, Model model) {
+//        if(bindingResult.hasErrors()) {
+//            model.addAttribute("roles", roleRepository.findAll());
+//            return "/admin/edit";
+//        }
+//        userService.editUser(user);
+//        return  "redirect:/admin";
+//    }
+//
+//    @PatchMapping("/{id}/pass")
+//    public String updatePass(@ModelAttribute("user") User user) {
+//        userService.addUser(user);
+//        return  "redirect:/admin";
+//    }
+//
+//    @GetMapping("/{id}/pass")
+//    public String editPass(Model model, @PathVariable("id") Long id) {
+//        model.addAttribute("user", userService.getById(id));
+//        model.addAttribute("roles", roleRepository.findAll());
+//        return  "/admin/pass";
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public String delete(@PathVariable("id") Long id) {
+//        userService.delete(id);
+//        return "redirect:/admin";
+//    }
 }

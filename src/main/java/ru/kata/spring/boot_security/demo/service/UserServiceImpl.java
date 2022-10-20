@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addUser(User user) {
-        user.setPass("{bcrypt}" + new BCryptPasswordEncoder().encode(user.getPass()));
+        user.setPassword("{bcrypt}" + new BCryptPasswordEncoder().encode(user.getPassword()));
         userRepository.saveAndFlush(user);
     }
 
@@ -37,8 +37,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public User getByLogin(String login) {
-        return userRepository.findByLogin(login);
+    public User getByEmail(String login) {
+        return userRepository.findByEmail(login);
     }
 
     @Override
@@ -61,12 +61,12 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByLogin(username);
+        User user = userRepository.findByEmail(username);
         if (user == null) {
             throw new UsernameNotFoundException(String.format("Пользователь '%s' не найден", username));
         }
 
-        return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPass(),
+        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
                 mapRolesToAuthorities(user.getRoles()));
     }
 

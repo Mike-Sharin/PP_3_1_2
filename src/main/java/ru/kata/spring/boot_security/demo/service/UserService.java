@@ -8,7 +8,7 @@ public interface UserService extends UserDetailsService {
 
     void addUser(User user);
     void delete(long id);
-    User getByLogin(String login);
+    User getByEmail(String login);
     void editUser(User user);
     List<User> getAll();
     User getById(Long id);

@@ -17,17 +17,21 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @NotEmpty(message = "Не указан логин")
-    @Size(min=3, max=30, message = "Логин должен состоять от 3 до 30 символов")
-    @Column(name = "name", nullable = false, unique = true)
-    private String login;
     @NotEmpty(message = "Не указано имя")
     @Size(min=3, max=30, message = "Имя должно состоять от 3 до 30 символов")
-    @Column(name = "surname",nullable = false)
-    private String name;
+    @Column(name = "first_name", nullable = false, unique = true)
+    private String firstName;
+    @NotEmpty(message = "Не указано фамилия")
+    @Size(min=3, max=30, message = "Фамилия должна состоять от 3 до 30 символов")
+    @Column(name = "last_name",nullable = false)
+    private String lastName;
+    @NotEmpty(message = "Не указан возраст")
+    @Size(min=10, max=90, message = "Возраст должен быть от 10 до 90 лет")
+    @Column(name = "age")
+    private byte age;
     @NotEmpty(message = "Не указан пароль")
     @Column(name = "password", nullable = false)
-    private String pass;
+    private String password;
     @NotEmpty(message = "Не указан адрес электронной почты")
     @Email(message = "Электронная почта не соответствует формату")
     @Column(name = "email")
@@ -42,10 +46,11 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String name, String surname, String pass, String email) {
-        this.login = name;
-        this.name = surname;
-        this.pass = pass;
+    public User(String firstName, String lastName, byte age, String password, String email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+        this.password = password;
         this.email = email;
     }
 
@@ -57,28 +62,35 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    public String getLogin() {
-        return login;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getName() {
-        return name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public String getPass() {
-        return pass;
+    public int getAge() {
+        return age;
     }
 
-    public void setPass(String pass) {
-        this.pass = pass;
+    public void setAge(byte age) {
+        this.age = age;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getEmail() {
@@ -101,9 +113,10 @@ public class User implements UserDetails {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", login='" + login + '\'' +
-                ", name='" + name + '\'' +
-                ", pass='" + pass + '\'' +
+                ", firstname='" + firstName + '\'' +
+                ", lastname='" + lastName + '\'' +
+                ", age='" + age + '\'' +
+                ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", roles=" + roles +
                 '}';
@@ -115,13 +128,8 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
-        return pass;
-    }
-
-    @Override
     public String getUsername() {
-        return login;
+        return firstName;
     }
 
     @Override
@@ -149,12 +157,11 @@ public class User implements UserDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(login, user.login)
-                && Objects.equals(email, user.email);
+        return email.equals(user.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(login, email);
+        return Objects.hash(email);
     }
 }

@@ -1,14 +1,13 @@
 package ru.kata.spring.boot_security.demo.model;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -124,7 +123,13 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
+        Set<Role> roles = getRoles();
+        List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
+
+        for (Role role : roles) {
+            authorityList.add(new SimpleGrantedAuthority(role.getName()));
+        }
+        return authorityList;
     }
 
     @Override

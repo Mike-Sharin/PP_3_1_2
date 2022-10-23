@@ -57,27 +57,18 @@ public class AdminController {
     @GetMapping()
     public String listUsers(Model model, Principal principal){
         List<User> listUsers = userService.getAll();
-        User authorizedUser = userService.getByEmail(principal.getName());
         List<Role> listRoles = roleRepository.findAll();
 
         System.out.println("_____________________________________________________________________________________________");
         System.out.println("_____________________________________________________________________________________________");
+        System.out.println(principal);
+        System.out.println("____________________________");
         System.out.println(listUsers);
         System.out.println("____________________________");
-        System.out.println(authorizedUser);
-        System.out.println("____________________________");
         System.out.println(listRoles);
-        System.out.println("____________________________");
-
-        System.out.println(authorizedUser.getRoles().contains("ROLE_ADMIN"));
-        System.out.println(authorizedUser.getRoles().stream().filter(o -> o.getName().equals("ROLE_ADMIN")).findFirst().isPresent());
-        System.out.println(authorizedUser.getRoles().stream().filter(o -> o.getName().equals("ROLE_ADMIN")).findFirst());
-        System.out.println(authorizedUser.getRoles().stream().filter(o -> o.getName().equals("ROLE_ADMIN")));
         System.out.println("_____________________________________________________________________________________________");
         System.out.println("_____________________________________________________________________________________________");
         model.addAttribute("listUsers", listUsers);
-        model.addAttribute("authorizedUser", authorizedUser);
-        model.addAttribute("accessAdministrator", authorizedUser.getRoles().stream().filter(o -> o.getName().equals("ROLE_ADMIN")).findFirst().isPresent());
         model.addAttribute("listRoles", listRoles);
 
         return "adminPagee";

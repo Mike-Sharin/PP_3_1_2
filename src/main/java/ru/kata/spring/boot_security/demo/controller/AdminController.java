@@ -60,6 +60,7 @@ public class AdminController {
         List<Role> listRoles = roleRepository.findAll();
 
         System.out.println("_____________________________________________________________________________________________");
+        System.out.println("open listUsers");
         System.out.println("_____________________________________________________________________________________________");
         System.out.println(principal);
         System.out.println("____________________________");
@@ -67,30 +68,34 @@ public class AdminController {
         System.out.println("____________________________");
         System.out.println(listRoles);
         System.out.println("_____________________________________________________________________________________________");
+        System.out.println("close listUsers");
         System.out.println("_____________________________________________________________________________________________");
         model.addAttribute("listUsers", listUsers);
         model.addAttribute("listRoles", listRoles);
+        model.addAttribute("authorizedUser", userService.getByEmail(principal.getName()));
+        model.addAttribute("user", new User());
 
-        return "adminPagee";
+
+        return "mainPage";
     }
 
-    @PatchMapping("/{id}")
-    public void update(@ModelAttribute("userEdit") @Valid User user, BindingResult bindingResult, Model model) {
-        if(bindingResult.hasErrors()) {
-            model.addAttribute("roles", roleRepository.findAll());
-         //   return "/admin/edit";
-        }
-        userService.editUser(user);
-      //  return  "redirect:/admin";
-    }
+//    @PatchMapping("/{id}")
+//    public void update(@ModelAttribute("userEdit") @Valid User user, BindingResult bindingResult, Model model) {
+//        if(bindingResult.hasErrors()) {
+//            model.addAttribute("roles", roleRepository.findAll());
+//         //   return "/admin/edit";
+//        }
+//        userService.editUser(user);
+//      //  return  "redirect:/admin";
+//    }
 
-    @GetMapping("/{id}")
-    public void show(@PathVariable("id") Long id, Model model, Principal principal) {
-        User user = userService.getById(id);
-        model.addAttribute("user", user);
-        model.addAttribute("disabledButtonDelete", (user.getEmail().equals(principal.getName())));
-        //return "/admin/show";
-    }
+//    @GetMapping("/{id}")
+//    public void show(@PathVariable("id") Long id, Model model, Principal principal) {
+//        User user = userService.getById(id);
+//        model.addAttribute("user", user);
+//        model.addAttribute("disabledButtonDelete", (user.getEmail().equals(principal.getName())));
+//        //return "/admin/show";
+//    }
 
 //    @GetMapping()
 //    public String listUsers(Model model, Principal principal){
@@ -98,26 +103,42 @@ public class AdminController {
 //        model.addAttribute("authorization", principal.getName());
 //        return "/admin/list";
 //    }
-//
-//    @GetMapping("/new")
-//    public String newUser(@ModelAttribute("user") User user, Model model) {
-//        model.addAttribute("roles", roleRepository.findAll());
-//        return "/admin/new";
-//    }
-//
-//    @PostMapping()
-//    public String create(@ModelAttribute("user") @Valid User user,
-//                         BindingResult bindingResult, Model model) {
-//        model.addAttribute("roles", roleRepository.findAll());
-//        if (userService.getByLogin(user.getEmail()) != null) {
-//            bindingResult.rejectValue("login", "error.login", "Пользователь с таким логином уже существует" );
-//        }
-//        if(bindingResult.hasErrors()) {
-//            return "/admin/new";
-//        }
-//        userService.addUser(user);
-//        return "redirect:/admin";
-//    }
+
+    @GetMapping("/new")
+    public String newUser(@ModelAttribute("user") User user, Model model) {
+        System.out.println("_____________________________________________________________________________________________");
+        System.out.println("open newUser");
+        System.out.println("_____________________________________________________________________________________________");
+        System.out.println(user);
+        System.out.println("_____________________________________________________________________________________________");
+        System.out.println("close newUser");
+        System.out.println("_____________________________________________________________________________________________");
+        model.addAttribute("roles", roleRepository.findAll());
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/new")
+    public String create(@ModelAttribute("user") @Valid User user,
+                         BindingResult bindingResult, Model model) {
+        System.out.println("_____________________________________________________________________________________________");
+        System.out.println("open create");
+        System.out.println("_____________________________________________________________________________________________");
+        System.out.println(user);
+        System.out.println("____________________________");
+        System.out.println(model);
+        System.out.println("_____________________________________________________________________________________________");
+        System.out.println("close create");
+        System.out.println("_____________________________________________________________________________________________");
+        model.addAttribute("roles", roleRepository.findAll());
+        if (userService.getByEmail(user.getEmail()) != null) {
+            bindingResult.rejectValue("login", "error.login", "Пользователь с таким логином уже существует" );
+        }
+        if(bindingResult.hasErrors()) {
+            return "/mainPage";
+        }
+        userService.addUser(user);
+        return "redirect:/admin";
+    }
 //
 //    @GetMapping("/{id}")
 //    public String show(@PathVariable("id") Long id, Model model, Principal principal) {

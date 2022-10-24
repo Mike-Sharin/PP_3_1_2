@@ -15,10 +15,10 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping()
-    public String listUsers(Model model, Principal principal){
-        model.addAttribute("authorizedUser", userService.getByEmail(principal.getName()));
-        return "userPage";
-    }
+//    @GetMapping()
+//    public String listUsers(Model model, Principal principal){
+//        model.addAttribute("authorizedUser", userService.getByEmail(principal.getName()));
+//        return "userPage";
+//    }
 }
 

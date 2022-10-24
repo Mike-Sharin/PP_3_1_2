@@ -11,8 +11,8 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
           integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
-    <title sec:authorize="hasRole('ADMIN')">Admin page</title>
-    <title sec:authorize="hasRole('USER')">User page</title>
+    <title th:if="${#authorization.expression('hasRole(''ADMIN'')')}">Admin page</title>
+    <title th:unless="${#authorization.expression('hasRole(''ADMIN'')')}">User page</title>
 </head>
 <body>
 
@@ -27,8 +27,8 @@
                     <span class="font-weight-bolder" sec:authentication="name">EmailUser</span><!--
           --><span class="font-weight-normal"> with roles: </span><!--
           --><span th:each="r, iter:${#authentication.getAuthorities()}">
-                <span th:text="${r.getAuthority().replaceFirst('ROLE_', '')}">Roles</span>
-                 <th:block th:if="${!iter.last}">, </th:block>
+                <span th:text="${r.getAuthority().replaceFirst('ROLE_', '')}">Roles</span><!--
+          --><th:block th:if="${!iter.last}">, </th:block>
              </span>
                 </div>
             </div>
@@ -57,7 +57,7 @@
                         <h2 class="font-weight-bold">Admin panel</h2>
                         <nav>
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                <a class="nav-link active" id="nav-users-table-tab" data-toggle="tab"
+                                <a class="nav-link show active" id="nav-users-table-tab" data-toggle="tab"
                                    href="#nav-users-table" role="tab" aria-controls="nav-home" aria-selected="true">Users
                                     table</a>
                                 <a class="nav-link" id="nav-new-user-tab" data-toggle="tab" href="#nav-new-user"
@@ -93,10 +93,10 @@
                                                 <td th:utext="${user.getAge()}">Age</td>
                                                 <td th:utext="${user.getEmail()}">Email</td>
                                                 <td>
-                          <span name="userRoles" th:each="role, iter : ${user.getRoles()}">
-                              <span th:text="${role.getName().replace('ROLE_', '')}">Roles</span>
-                              <th:block th:if="${!iter.last}">, </th:block>
-                            </span>
+                                                    <span name="userRoles" th:each="role, iter : ${user.getRoles()}">
+                                                        <span th:text="${role.getName().replace('ROLE_', '')}">Roles</span><!--
+                                                        --><th:block th:if="${!iter.last}">, </th:block>
+                                                    </span>
                                                 </td>
                                                 <td>
                                                     <!-- Кнопка-триггер модального окна -->
@@ -132,108 +132,56 @@
                                     <div class="container">
                                         <div class="row justify-content-center">
                                             <div class="col-5">
-                                                <form>
+                                                <form th:method="POST" th:action="@{/admin/new}" th:object="${user}">
                                                     <div class="form-group">
                                                         <p for="newUserId" class="text-center font-weight-bold m-0" hidden>ID</p>
                                                         <input type="text" class="form-control" id="newUserId" hidden/>
                                                     </div>
                                                     <div class="form-group">
-                                                        <p for="newUserFirstName" class="text-center font-weight-bold m-0">First Name</p>
-                                                        <input type="text" class="form-control" id="newUserFirstName"/>
+                                                        <p for="newUserFirstName" class="text-center font-weight-bold m-0">First name</p>
+                                                        <input type="text" class="form-control" th:field="*{firstName}" id="newUserFirstName" placeholder="First name"/>
                                                     </div>
                                                     <div class="form-group">
-                                                        <p for="newUserLastName" class="text-center font-weight-bold m-0">Last Name</p>
-                                                        <input type="text" class="form-control" id="newUserLastName"/>
+                                                        <p for="newUserLastName" class="text-center font-weight-bold m-0">Last name</p>
+                                                        <input type="text" class="form-control" th:field="*{lastName}" id="newUserLastName" placeholder="Last name"/>
                                                     </div>
                                                     <div class="form-group">
                                                         <p for="newUserAge" class="text-center font-weight-bold m-0">Age</p>
-                                                        <input type="text" class="form-control" id="newUserAge"/>
+<!--                                                        <input type="text" class="form-control" th:field="*{age}" id="newUserAge" placeholder="10"/>-->
                                                     </div>
                                                     <div class="form-group">
-                                                        <p for="newUserEmail" class="text-center font-weight-bold m-0">Last Name</p>
-                                                        <input type="email" class="form-control" id="newUserEmail"/>
+                                                        <p for="newUserEmail" class="text-center font-weight-bold m-0">Email</p>
+                                                        <input type="email" class="form-control" th:field="*{email}" id="newUserEmail" placeholder="Email"/>
                                                     </div>
                                                     <div class="form-group">
-                                                        <p for="newUserPassword" class="text-center font-weight-bold m-0">Last Name</p>
-                                                        <input type="email" class="form-control" id="newUserPassword"/>
+                                                        <p for="newUserPassword" class="text-center font-weight-bold m-0">Password</p>
+                                                        <input type="password" class="form-control" th:field="*{password}" id="newUserPassword" placeholder="Password"/>
                                                     </div>
                                                     <div class="form-group">
-                                                        <p for="newUserRoles" class="text-center font-weight-bold m-0">Role</p>
-                                                        <select multiple class="form-control">
-                                                            <select multiple class="form-control">
-                                                                <option type="text" name="newUserRoles"
-                                                                        id="newUserRoles"
-                                                                        th:each="role : ${listRoles}"
-                                                                        th:text="${role.getName().replace('ROLE_', '')}"
-                                                                        th:value="${role.getId()}">VALUE
-                                                                </option>
-                                                            </select>
+                                                        <p for="newUserRoles" class="text-center font-weight-bold m-0">
+                                                            Role</p>
+                                                        <select multiple class="form-control" size="3">
+                                                            <option name="newUserRoles" id="newUserRoles"
+                                                                    th:each="role : ${listRoles}"
+                                                                    th:text="${role.getName().replace('ROLE_', '')}"
+                                                                    th:value="${role.getId()}"
+                                                                    th:field="*{roles}">Roles
+                                                            </option>
                                                         </select>
+                                                    </div>
+                                                    <div class="row justify-content-center m-3">
+                                                        <input type="submit" class="btn btn-success btn-lg" value="Add new user"/>
                                                     </div>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
-<!--                                    <ul class="list-group list-group-flush">-->
-<!--                                        <li class="list-group-item">-->
-<!--                                            <form th:method="POST" th:action="@{/admin}" th:object="${newUser}">-->
-<!--                                                <div class="text-center">-->
-<!--                                                    <div class="form-group">-->
-<!--                                                        <label for="newUserFirstName">First Name</label>-->
-<!--                                                        <input type="text" th:field="*{firstName}"-->
-<!--                                                               id="newUserFirstName"/>-->
-<!--                                                        &lt;!&ndash;                          <div style="color:red" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">FirstName Error</div>&ndash;&gt;-->
-<!--                                                    </div>-->
-<!--                                                    <div class="form-group">-->
-<!--                                                        <label for="newUserLastName">Last Name</label>-->
-<!--                                                        <input type="text" th:field="*{lastName}" id="newUserLastName"/>-->
-<!--                                                        &lt;!&ndash;                          <div style="color:red" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">LastName Error</div>&ndash;&gt;-->
-<!--                                                    </div>-->
-<!--                                                    <div class="form-group">-->
-<!--                                                        <label for="newUserAge">Age</label>-->
-<!--                                                        <input type="text" th:field="*{age}" id="newUserAge"/>-->
-<!--                                                        &lt;!&ndash;                          <div style="color:red" th:if="${#fields.hasErrors('age')}" th:errors="*{age}">Age Error</div>&ndash;&gt;-->
-<!--                                                    </div>-->
-<!--                                                    <div class="form-group">-->
-<!--                                                        <label for="newUserEmail">Email</label>-->
-<!--                                                        <input type="email" th:field="*{email}" id="newUserEmail">-->
-<!--                                                        &lt;!&ndash;                          <div style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</div>&ndash;&gt;-->
-<!--                                                    </div>-->
-<!--                                                    <div class="form-group">-->
-<!--                                                        <label for="newUserPassword">Password</label>-->
-<!--                                                        <input type="password" th:field="*{password}"-->
-<!--                                                               id="newUserPassword">-->
-<!--                                                        &lt;!&ndash;                          <div style="color:red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</div>&ndash;&gt;-->
-<!--                                                    </div>-->
-<!--                                                    <div class="form-group">-->
-<!--                                                        <label for="newUserRoles">Role</label>-->
-<!--                                                        <select multiple class="form-control">-->
-<!--                                                            <option type="text" name="newUserRoles" id="newUserRoles"-->
-<!--                                                                    th:each="role : ${listRoles}"-->
-<!--                                                                    th:text="${role.getName().replace('ROLE_', '')}"-->
-<!--                                                                    th:value="${role.getId()}"-->
-<!--                                                                    th:field="*{roles}">VALUE-->
-<!--                                                            </option>-->
-<!--                                                        </select>-->
-<!--                                                    </div>-->
-<!--                                                    <div class="form-group">-->
-<!--                                                        &lt;!&ndash;                                                      <div style="color:red" th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}">Role Error</div>&ndash;&gt;-->
-<!--                                                    </div>-->
-<!--                                                    <br><br>-->
-<!--                                                    <button type="button" class="btn btn-success">Add new user</button>-->
-<!--                                                </div>-->
-<!--                                            </form>-->
-<!--                                        </li>-->
-<!--                                    </ul>-->
-
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="v-pills-user" role="tabpanel" aria-labelledby="v-pills-profile-tab">
                         <h2 class="font-weight-bold">User information-page</h2>
-
-
                         <div class="tab-content" id="nav-tabContent2">
                             <div class="tab-pane fade show active" id="nav-user-table" role="tabpanel"
                                  aria-labelledby="nav-home-tab">
@@ -254,37 +202,24 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr th:each="user : ${listUsers}">
-                                                <td th:utext="${user.getId()}">Id</td>
-                                                <td th:utext="${user.getFirstName()}">FirstName</td>
-                                                <td th:utext="${user.getLastName()}">LastName</td>
-                                                <td th:utext="${user.getAge()}">Age</td>
-                                                <td th:utext="${user.getEmail()}">Email</td>
+                                            <tr>
+                                                <td th:utext="${authorizedUser.getId()}">Id</td>
+                                                <td th:utext="${authorizedUser.getFirstName()}">FirstName</td>
+                                                <td th:utext="${authorizedUser.getLastName()}">LastName</td>
+                                                <td th:utext="${authorizedUser.getAge()}">Age</td>
+                                                <td th:utext="${authorizedUser.getEmail()}">Email</td>
                                                 <td>
-                            <span name="userRoles" th:each="role, iter : ${user.getRoles()}">
-                              <span th:text="${role.getName().replace('ROLE_', '')}">Roles</span>
-                              <th:block th:if="${!iter.last}">, </th:block>
-                            </span>
+                                                    <span name="userRoles" th:each="role, iter : ${authorizedUser.getRoles()}">
+                                                        <span th:text="${role.getName().replace('ROLE_', '')}">Roles</span><!--
+                                                        --><th:block th:if="${!iter.last}">, </th:block>
+                                                    </span>
                                                 </td>
-                                                <!--                      <tr th:object="${#authentication.getAuthorities()}">-->
-                                                <!--                        <td th:utext="${authentication.getAuthorities().getId()}">Id</td>-->
-                                                <!--                        <td th:utext="${authentication.getAuthorities().getFirstName()}">FirstName</td>-->
-                                                <!--                        <td th:utext="${authentication.getAuthorities().getLastName()}">LastName</td>-->
-                                                <!--                        <td th:utext="${authentication.getAuthorities().getAge()}">Age</td>-->
-                                                <!--                        <td th:utext="${authentication.getAuthorities().getEmail()}">Email</td>-->
-                                                <!--                        <td/>-->
-                                                <!--                        <span th:class="text" name="userRoles"-->
-                                                <!--                              th:each="role : ${authentication.getAuthorities().getRoles()}"-->
-                                                <!--                              th:text="${role.getName().replace('ROLE_', '')}">Roles</span>-->
-                                                <!--                        </td>-->
                                             </tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
@@ -315,11 +250,13 @@
                                             <input type="text" class="form-control" id="editUserId" disabled="false"/>
                                         </div>
                                         <div class="form-group">
-                                            <p for="editUserFirstName" class="text-center font-weight-bold m-0">First Name</p>
+                                            <p for="editUserFirstName" class="text-center font-weight-bold m-0">First
+                                                Name</p>
                                             <input type="text" class="form-control" id="editUserFirstName"/>
                                         </div>
                                         <div class="form-group">
-                                            <p for="editUserLastName" class="text-center font-weight-bold m-0">Last Name</p>
+                                            <p for="editUserLastName" class="text-center font-weight-bold m-0">Last
+                                                Name</p>
                                             <input type="text" class="form-control" id="editUserLastName"/>
                                         </div>
                                         <div class="form-group">
@@ -327,29 +264,32 @@
                                             <input type="text" class="form-control" id="editUserAge"/>
                                         </div>
                                         <div class="form-group">
-                                            <p for="editUserEmail" class="text-center font-weight-bold m-0">Last Name</p>
+                                            <p for="editUserEmail" class="text-center font-weight-bold m-0">Last
+                                                Name</p>
                                             <input type="email" class="form-control" id="editUserEmail"/>
                                         </div>
                                         <div class="form-group">
-                                            <p for="editUserPassword" class="text-center font-weight-bold m-0">Last Name</p>
+                                            <p for="editUserPassword" class="text-center font-weight-bold m-0">Last
+                                                Name</p>
                                             <input type="email" class="form-control" id="editUserPassword"/>
                                         </div>
                                         <div class="form-group">
                                             <p for="editUserRoles" class="text-center font-weight-bold m-0">Role</p>
                                             <select multiple class="form-control">
-<!--                                                <option type="text" id="editUserRoles"-->
-<!--                                                        th:each="role : ${listRoles}"-->
-<!--                                                        th:text="${role.getName().replace('ROLE_', '')}"-->
-<!--                                                        th:value="${role.getId()}"-->
-<!--                                                        th:field="*{role}">VALUE-->
-<!--                                                </option>-->
+                                                <!--                                                <option type="text" id="editUserRoles"-->
+                                                <!--                                                        th:each="role : ${listRoles}"-->
+                                                <!--                                                        th:text="${role.getName().replace('ROLE_', '')}"-->
+                                                <!--                                                        th:value="${role.getId()}"-->
+                                                <!--                                                        th:field="*{role}">VALUE-->
+                                                <!--                                                </option>-->
                                             </select>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close
+                                </button>
                                 <button type="sibmit" class="btn btn-primary btn-sm" value="Edit">Edit</button>
                             </div>
                         </div>
@@ -399,6 +339,15 @@
 
 </body>
 <script>
+    $("#v-pills-tab").ready(function () {
+        $("#v-pills-tab a.nav-link").first().addClass("active").click()//.trigger('click')
+        // $('#v-pills-tab a.nav-link').first().prop('ariaSelected', false);
+        // $('#v-pills-tab a.nav-link').first().prop('ariaSelected', true);
+
+        console.log("ghjdthrf ")
+    });
+
+
     $('#myModal').on('shown.bs.modal', function () {
         $('#myInput').trigger('focus')
     });

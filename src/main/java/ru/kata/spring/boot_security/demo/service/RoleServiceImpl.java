@@ -22,6 +22,11 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public Role getByName(String name) {
+        return roleRepository.findByName(name);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return null;
     }

@@ -18,7 +18,7 @@ public class User implements UserDetails {
     private Long id;
     @NotEmpty(message = "Не указано имя")
     @Size(min=3, max=30, message = "Имя должно состоять от 3 до 30 символов")
-    @Column(name = "first_name", nullable = false, unique = true)
+    @Column(name = "first_name", nullable = false)
     private String firstName;
     @NotEmpty(message = "Не указано фамилия")
     @Size(min=3, max=30, message = "Фамилия должна состоять от 3 до 30 символов")
@@ -27,7 +27,7 @@ public class User implements UserDetails {
     @NotEmpty(message = "Не указан возраст")
     @Size(min=10, max=90, message = "Возраст должен быть от 10 до 90 лет")
     @Column(name = "age")
-    private byte age;
+    private Byte age = 10;
     @NotEmpty(message = "Не указан пароль")
     @Column(name = "password", nullable = false)
     private String password;
@@ -45,7 +45,7 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String firstName, String lastName, byte age, String password, String email) {
+    public User(String firstName, String lastName, Byte age, String password, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.age = age;
@@ -77,11 +77,11 @@ public class User implements UserDetails {
         this.lastName = lastName;
     }
 
-    public int getAge() {
+    public Byte getAge() {
         return age;
     }
 
-    public void setAge(byte age) {
+    public void setAge(Byte age) {
         this.age = age;
     }
 

@@ -11,6 +11,7 @@ import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.*;
@@ -29,38 +30,49 @@ public class AdminController {
         this.roleService = roleService;
     }
 
-//    @PostConstruct
-//    private void postConstruct() {
-//        User userAdmin = new User("admin_name", "adminson", (byte)  25, "admin", "admin@ya.ru");
-//        User userUser = new User("user_name", "userson", (byte) 35, "user", "user@ya.ru");
-//
-//        Role roleAdmin = new Role("ROLE_ADMIN");
-//        Role roleUser = new Role("ROLE_USER");
-//
-//        Set<Role> setAdmin = new HashSet<>();
-//        setAdmin.add(roleAdmin);
-//        setAdmin.add(roleUser);
-//
-//        Set<Role> setUser = new HashSet<>();
-//        setUser.add(roleUser);
-//
-//        userAdmin.setRoles(setAdmin);
-//        userUser.setRoles(setUser);
-//
-//        roleService.addRole(roleAdmin);
-//        roleService.addRole(roleUser);
-//
-//        userService.addUser(userAdmin);
-//        userService.addUser(userUser);
-//    }
+    @PostConstruct
+    private void postConstruct() {
+        Role roleAdmin = roleService.getByName("ROLE_ADMIN");
+        Role roleUser = roleService.getByName("ROLE_USER");
+
+        if(roleAdmin == null) {
+            roleAdmin = new Role("ROLE_ADMIN");
+            roleService.addRole(roleAdmin);
+        }
+
+        if(roleUser == null) {
+            roleUser = new Role("ROLE_USER");
+            roleService.addRole(roleUser);
+        }
+
+        if(userService.getByEmail("admin@ya.ru") == null) {
+            User userAdmin = new User("admin_name", "adminson", (byte) 25, "admin", "admin@ya.ru");
+
+            Set<Role> setAdmin = new HashSet<>();
+            setAdmin.add(roleAdmin);
+            setAdmin.add(roleUser);
+
+            userAdmin.setRoles(setAdmin);
+            userService.addUser(userAdmin);
+        }
+
+        if(userService.getByEmail("user@ya.ru") == null) {
+            User userUser = new User("user_name", "userson",  (byte) 35, "user", "user@ya.ru");
+
+            Set<Role> setUser = new HashSet<>();
+            setUser.add(roleUser);
+
+            userUser.setRoles(setUser);
+            userService.addUser(userUser);
+        }
+    }
 
     @GetMapping()
     public String listUsers(Model model, Principal principal){
         List<User> listUsers = userService.getAll();
         List<Role> listRoles = roleRepository.findAll();
-
         System.out.println("_____________________________________________________________________________________________");
-        System.out.println("open listUsers");
+        System.out.println("________________________________________open listUsers________________________________________");
         System.out.println("_____________________________________________________________________________________________");
         System.out.println(principal);
         System.out.println("____________________________");
@@ -68,12 +80,12 @@ public class AdminController {
         System.out.println("____________________________");
         System.out.println(listRoles);
         System.out.println("_____________________________________________________________________________________________");
-        System.out.println("close listUsers");
+        System.out.println("________________________________________close listUsers________________________________________");
         System.out.println("_____________________________________________________________________________________________");
         model.addAttribute("listUsers", listUsers);
         model.addAttribute("listRoles", listRoles);
         model.addAttribute("authorizedUser", userService.getByEmail(principal.getName()));
-        model.addAttribute("user", new User());
+        model.addAttribute("newUser", new User());
 
 
         return "mainPage";
@@ -105,38 +117,43 @@ public class AdminController {
 //    }
 
     @GetMapping("/new")
-    public String newUser(@ModelAttribute("user") User user, Model model) {
+    public String newUser(@ModelAttribute("newUser") User user, Model model) {
         System.out.println("_____________________________________________________________________________________________");
-        System.out.println("open newUser");
+        System.out.println("________________________________________open newUser________________________________________");
         System.out.println("_____________________________________________________________________________________________");
         System.out.println(user);
         System.out.println("_____________________________________________________________________________________________");
-        System.out.println("close newUser");
+        System.out.println("________________________________________close newUser________________________________________");
         System.out.println("_____________________________________________________________________________________________");
         model.addAttribute("roles", roleRepository.findAll());
         return "redirect:/admin";
     }
 
     @PostMapping("/new")
-    public String create(@ModelAttribute("user") @Valid User user,
+    public String create(@ModelAttribute("newUser") @Valid User newUser,
                          BindingResult bindingResult, Model model) {
         System.out.println("_____________________________________________________________________________________________");
-        System.out.println("open create");
+        System.out.println("________________________________________open create________________________________________");
         System.out.println("_____________________________________________________________________________________________");
-        System.out.println(user);
+        System.out.println(newUser);
         System.out.println("____________________________");
         System.out.println(model);
+        System.out.println("____________________________");
+        System.out.println(bindingResult.hasErrors());
+        System.out.println("____________________________");
+        System.out.println(userService.getByEmail(newUser.getEmail()));
         System.out.println("_____________________________________________________________________________________________");
-        System.out.println("close create");
+        System.out.println("________________________________________close create________________________________________");
         System.out.println("_____________________________________________________________________________________________");
         model.addAttribute("roles", roleRepository.findAll());
-        if (userService.getByEmail(user.getEmail()) != null) {
-            bindingResult.rejectValue("login", "error.login", "Пользователь с таким логином уже существует" );
+        if (userService.getByEmail(newUser.getEmail()) != null) {
+            bindingResult.rejectValue("login", "error.login", "Пользователь с таким логином и именем уже существует" );
+            return "/mainPage";
         }
         if(bindingResult.hasErrors()) {
             return "/mainPage";
         }
-        userService.addUser(user);
+        userService.addUser(newUser);
         return "redirect:/admin";
     }
 //

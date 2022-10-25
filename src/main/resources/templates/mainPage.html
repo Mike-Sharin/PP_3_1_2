@@ -30,6 +30,15 @@
                     --><span th:each="r, iter:${#authentication.getAuthorities()}">
                         <span th:text="${r.getAuthority().replaceFirst('ROLE_', '')}">Roles</span><!--
                         --><th:block th:if="${!iter.last}">, </th:block>
+
+
+
+
+<!--                    ${#strings.arrayJoin(namesArray,',')}-->
+
+
+
+
              </span>
                 </div>
             </div>
@@ -53,7 +62,7 @@
             </div>
             <div class="col-10 p-4 bg-light">
                 <div class="tab-content" id="v-pills-tabContent">
-                    <div sec:authorize="hasRole('ROLE_ADMIN')" class="tab-pane fade show active" id="v-pills-admin" role="tabpanel"
+                    <div sec:authorize="hasRole('ROLE_ADMIN')" class="tab-pane fade active" id="v-pills-admin" role="tabpanel"
                          aria-labelledby="v-pills-home-tab">
                         <h2 class="font-weight-bold">Admin panel</h2>
                         <nav>
@@ -88,13 +97,13 @@
                                             </thead>
                                             <tbody>
                                             <tr th:each="user : ${listUsers}">
-                                                <td th:utext="${user.getId()}">Id</td>
-                                                <td th:utext="${user.getFirstName()}">FirstName</td>
-                                                <td th:utext="${user.getLastName()}">LastName</td>
-                                                <td th:utext="${user.getAge()}">Age</td>
-                                                <td th:utext="${user.getEmail()}">Email</td>
+                                                <td th:id="${user.getId()} + '_id'" th:utext="${user.getId()}">Id</td>
+                                                <td th:id="${user.getId()} + '_firstname'" th:utext="${user.getFirstName()}">FirstName</td>
+                                                <td th:id="${user.getId()} + '_lastname'" th:utext="${user.getLastName()}">LastName</td>
+                                                <td th:id="${user.getId()} + '_age'" th:utext="${user.getAge()}">Age</td>
+                                                <td th:id="${user.getId()} + '_email'" th:utext="${user.getEmail()}">Email</td>
                                                 <td>
-                                                    <span name="userRoles" th:each="role, iter : ${user.getRoles()}">
+                                                    <span th:id="${user.getId()} + '_roles'" name="userRoles" th:each="role, iter : ${user.getRoles()}">
                                                         <span th:text="${role.getName().replace('ROLE_', '')}">Roles</span><!--
                                                         --><th:block th:if="${!iter.last}">, </th:block>
                                                     </span>
@@ -108,9 +117,10 @@
                                                     </button>
                                                 </td>
                                                 <td>
-                                                    <button type="button" id="buttonModalDeleteUser"
-                                                            class="btn btn-danger btn-sm" role="button"
-                                                            data-toggle="modal" data-type="delete"
+                                                    <button type="button"
+                                                            class="btn btn-danger btn-sm buttonModalDeleteUser" role="button"
+                                                            data-toggle="modal"
+                                                            th:name="${user.getId()}"
                                                             data-target="#modalDeleteUser">
                                                         Delete
                                                     </button>
@@ -118,6 +128,7 @@
                                                     <!--                            Delete-->
                                                     <!--                          </button>-->
                                                 </td>
+<!--                                                <td th:id="${user.getId()} + '_user'" th:utext="${user}"hidden> </td>-->
                                             </tr>
                                             </tbody>
                                         </table>
@@ -208,7 +219,7 @@
                             </div>
                         </div>
                     </div>
-                    <div sec:authorize="hasRole('ROLE_USER')" class="tab-pane fade show active" id="v-pills-user" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                    <div sec:authorize="hasRole('ROLE_USER')" class="tab-pane fade active" id="v-pills-user" role="tabpanel" aria-labelledby="v-pills-profile-tab">
                         <h2 class="font-weight-bold">User information-page</h2>
                         <div class="tab-content" id="nav-tabContent2">
                             <div class="tab-pane fade show active" id="nav-user-table" role="tabpanel"
@@ -255,9 +266,6 @@
         </div>
     </div>
 </div>
-
-
-
 
 <!-- Модальное окно -->
 <div class="myForm">
@@ -330,71 +338,65 @@
 <div class="modal fade" id="modalDeleteUser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Delete user</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-5">
-                            <div th:each="deleteUser : ${listUsers}">
-                                <div th:if="${ deleteUser.id == 7}">
-                                <form th:method="GET" th:action="@{/admin/delete/{id}(id=${deleteUser.id})}"
-                                      th:object="${deleteUser}">
-                                    <div class="form-group">
-                                        <p for="deleteUserId" class="text-center font-weight-bold m-0">ID</p>
-                                        <input type="text" class="form-control" th:value="*{id}"
-                                               id="deleteUserId" disabled="false"/>
+
+                    <form id="formDeleteUser" th:method="DELETE" th:action="@{/admin/{id}(id=${deleteUserId.val})/delete}">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Delete user</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container">
+                                <div class="row justify-content-center">
+                                    <div class="col-5">
+                                        <div class="form-group">
+                                            <p for="deleteUserId" class="text-center font-weight-bold m-0">ID</p>
+                                            <input type="text" class="form-control"
+                                                   id="deleteUserId" disabled="false"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <p for="deleteUserFirstName" class="text-center font-weight-bold m-0">First name</p>
+                                            <input type="text" class="form-control"
+                                                   id="deleteUserFirstName" disabled="false"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <p for="deleteUserLastName" class="text-center font-weight-bold m-0">Last name</p>
+                                            <input type="text" class="form-control"
+                                                   id="deleteUserLastName" disabled="false"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <p for="deleteUserAge" class="text-center font-weight-bold m-0">Age</p>
+                                            <input type="number" class="form-control"
+                                                   id="deleteUserAge"
+                                                   disabled="false"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <p for="deleteUserEmail" class="text-center font-weight-bold m-0">Email</p>
+                                            <input type="email" class="form-control"
+                                                   id="deleteUserEmail" disabled="false"/>
+                                        </div>
+                                        <div class="form-group">
+                                            <p for="deleteUserRoles" class="text-center font-weight-bold m-0">Role</p>
+                                            <select multiple class="form-control" size="3"
+                                                    disabled="false">
+<!--                                            <span name="userRoles" th:each="role, iter : ${deleteUser.getRoles()}">-->
+<!--                                                        <span th:text="${role.getName().replace('ROLE_', '')}">Roles</span>&lt;!&ndash;-->
+<!--                                                        &ndash;&gt;<th:block th:if="${!iter.last}">, </th:block>-->
+<!--                                                    </span>-->
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <p for="deleteUserFirstName" class="text-center font-weight-bold m-0">First name</p>
-                                        <input type="text" class="form-control" th:value="*{firstName}"
-                                               id="deleteUserFirstName" disabled="false"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <p for="deleteUserLastName" class="text-center font-weight-bold m-0">Last name</p>
-                                        <input type="text" class="form-control" th:value="*{lastName}"
-                                               id="deleteUserLastName" disabled="false"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <p for="deleteUserAge" class="text-center font-weight-bold m-0">Age</p>
-                                        <input type="number" class="form-control" th:value="*{age}" id="deleteUserAge"
-                                               disabled="false"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <p for="deleteUserEmail" class="text-center font-weight-bold m-0">Email</p>
-                                        <input type="email" class="form-control" th:value="*{email}"
-                                               id="deleteUserEmail" disabled="false"/>
-                                    </div>
-                                    <div class="form-group">
-                                        <p for="deleteUserRoles" class="text-center font-weight-bold m-0">Role</p>
-                                        <select multiple class="form-control" size="3" th:value="*{roles}"
-                                                disabled="false">
-<!--                                            <option name="newUserRoles" id="deleteUserRoles"-->
-<!--                                                    th:each="role : ${listRoles}"-->
-<!--                                                    th:text="${role.getName().replace('ROLE_', '')}"-->
-<!--                                                    th:value="${role.getId()}">Roles-->
-<!--                                            </option>-->
-                                            <span name="userRoles" th:each="role, iter : ${deleteUser.getRoles()}">
-                                                        <span th:text="${role.getName().replace('ROLE_', '')}">Roles</span><!--
-                                                        --><th:block th:if="${!iter.last}">, </th:block>
-                                                    </span>
-                                        </select>
-                                    </div>
-                                </form>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-                <input type="submit" class="btn btn-danger btn-sm" value="Delete"/>
-            </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                            <input type="submit" class="btn btn-danger btn-sm" value="Delete"/>
+                        </div>
+                    </form>
+
+
         </div>
     </div>
 </div>
@@ -417,34 +419,18 @@
 </body>
 
 <script>
+    $('.buttonModalDeleteUser').click(function () {
+        $('#deleteUserId').val($('#'+ this.name + '_id').text())
+        $('#deleteUserFirstName').val($('#'+ this.name + '_firstname').text())
+        $('#deleteUserLastName').val($('#'+ this.name + '_lastname').text())
+        $('#deleteUserAge').val($('#'+ this.name + '_age').text())
+        $('#deleteUserEmail').val($('#'+ this.name + '_email').text())
+        $('#deleteUserRoles').val($('#'+ this.name + '_roles').text())
+        $('#deleteUserRoles').val($('#'+ this.name + '_roles').text())
+    });
+
     $("#v-pills-tab").ready(function () {
-        $("#v-pills-tab a.nav-link").first().addClass("active").click()//.trigger('click')
-        // $('#v-pills-tab a.nav-link').first().prop('ariaSelected', false);
-        // $('#v-pills-tab a.nav-link').first().prop('ariaSelected', true);
-
-        console.log("ghjdthrf ")
-    });
-
-    $('#myModal').on('shown.bs.modal', function () {
-        $('#myInput').trigger('focus')
-    });
-
-    $(function () {
-        $(".btn").click(function () {
-
-        })
-
-        $("#buttonModalEditUser").click(function () {
-            $("#modalEditOrDeleteUser .modal-title").html("Edit user");
-            $("#modalEditOrDeleteUser #button").html("Edit");
-
-        });
-
-        $("#buttonModalDeleteUser").click(function () {
-            $("#modalEditOrDeleteUser .modal-title").html("Delete user");
-            $("#modalEditOrDeleteUser #button").html("Edit");
-        });
-
+        $("#v-pills-tab a.nav-link").first().trigger('click')
     });
 </script>
 

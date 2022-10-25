@@ -196,9 +196,9 @@ public class AdminController {
 //        return  "/admin/pass";
 //    }
 //
-//    @DeleteMapping("/{id}")
-//    public String delete(@PathVariable("id") Long id) {
-//        userService.delete(id);
-//        return "redirect:/admin";
-//    }
+    @DeleteMapping("/{id}/delete")
+    public String delete(@PathVariable("id") Long id) {
+        userService.delete(id);
+        return "redirect:/admin";
+    }
 }

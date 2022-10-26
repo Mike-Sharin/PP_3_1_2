@@ -2,28 +2,23 @@ package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
+
 import javax.annotation.PostConstruct;
-import java.security.Principal;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Controller
-@RequestMapping("/admin")
-public class AdminController {
+public class InsertedDefaultUsersController {
     private final UserService userService;
-    private final RoleRepository roleRepository;
     private final RoleService roleService;
 
     @Autowired
-    public AdminController(UserService userService, RoleRepository roleRepository, RoleService roleService) {
+    public InsertedDefaultUsersController(UserService userService, RoleService roleService) {
         this.userService = userService;
-        this.roleRepository = roleRepository;
         this.roleService = roleService;
     }
 
@@ -62,36 +57,5 @@ public class AdminController {
             userUser.setRoles(setUser);
             userService.addUser(userUser);
         }
-    }
-
-    @GetMapping()
-    public String listUsers(Model model, Principal principal){
-        model.addAttribute("listUsers", userService.getAll());
-        model.addAttribute("listRoles", roleRepository.findAll());
-        model.addAttribute("authorizedUser", userService.getByEmail(principal.getName()));
-        model.addAttribute("newUser", new User());
-
-        return "mainPage";
-    }
-
-    @PostMapping("/new")
-    public String create(@ModelAttribute("user") User newUser, Model model) {
-        model.addAttribute("roles", roleRepository.findAll());
-        userService.addUser(newUser);
-        return "redirect:/admin";
-    }
-
-    @PatchMapping("/{id}")
-    public String update(@ModelAttribute("newUser") User user) {
-        User userEdit = userService.getById(user.getId());
-        user.setPassword(userEdit.getPassword());
-        userService.addUser(user);
-        return  "redirect:/admin";
-    }
-
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") Long id) {
-        userService.delete(id);
-        return "redirect:/admin";
     }
 }

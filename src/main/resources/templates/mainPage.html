@@ -336,6 +336,12 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
+                                        <p for="editUserPassword" class="text-center font-weight-bold m-0">Password</p>
+                                        <input type="password" class="form-control"
+                                               id="editUserPassword"
+                                               th:name="password"></input>
+                                    </div>
+                                    <div class="form-group">
                                         <p for="editUserEmail" class="text-center font-weight-bold m-0">Email</p>
                                         <input type="email" class="form-control"
                                                id="editUserEmail"
@@ -348,16 +354,13 @@
                                     </div>
                                     <div class="form-group">
                                         <p for="editUserRoles" class="text-center font-weight-bold m-0">Role</p>
-                                        <select multiple class="form-control" size="3" th:field="*{roles}" required>
+                                        <select multiple class="form-control" size="3" th:field="*{roles}">
                                             <option name="roles" id="UserRoles"
                                                     th:each="role : ${listRoles}"
                                                     th:text="${role.getName().replace('ROLE_', '')}"
                                                     th:value="${role.getId()}">Roles
                                             </option>
                                         </select>
-                                        <div class="invalid-feedback">
-                                            Please select a role
-                                        </div>
                                     </div>
                                 </div>
                             </div>

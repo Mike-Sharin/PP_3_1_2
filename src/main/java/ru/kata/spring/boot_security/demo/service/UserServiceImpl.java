@@ -26,7 +26,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addUser(User user) {
-        user.setPassword("{bcrypt}" + new BCryptPasswordEncoder().encode(user.getPassword()));
+        if(user.getPassword().isEmpty()) {
+            user.setPassword(userRepository.getById(user.getId()).getPassword());
+        } else {
+            user.setPassword("{bcrypt}" + new BCryptPasswordEncoder().encode(user.getPassword()));
+        }
+
+        if(user.getRoles().size() == 0) {
+            user.setRoles(userRepository.getById(user.getId()).getRoles());
+        }
+
         userRepository.saveAndFlush(user);
     }
 

@@ -3,16 +3,13 @@ package ru.kata.spring.boot_security.demo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
-
 import javax.annotation.PostConstruct;
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.*;
 
@@ -77,93 +74,21 @@ public class AdminController {
         return "mainPage";
     }
 
-//    @PatchMapping("/{id}")
-//    public void update(@ModelAttribute("userEdit") @Valid User user, BindingResult bindingResult, Model model) {
-//        if(bindingResult.hasErrors()) {
-//            model.addAttribute("roles", roleRepository.findAll());
-//         //   return "/admin/edit";
-//        }
-//        userService.editUser(user);
-//      //  return  "redirect:/admin";
-//    }
-
-//    @GetMapping("/{id}")
-//    public void show(@PathVariable("id") Long id, Model model, Principal principal) {
-//        User user = userService.getById(id);
-//        model.addAttribute("user", user);
-//        model.addAttribute("disabledButtonDelete", (user.getEmail().equals(principal.getName())));
-//        //return "/admin/show";
-//    }
-
-//    @GetMapping()
-//    public String listUsers(Model model, Principal principal){
-//        model.addAttribute("users", userService.getAll());
-//        model.addAttribute("authorization", principal.getName());
-//        return "/admin/list";
-//    }
-
-    @GetMapping("/new")
-    public String newUser(@ModelAttribute("newUser") User user, Model model) {
-        model.addAttribute("roles", roleRepository.findAll());
-        return "redirect:/admin";
-    }
-
     @PostMapping("/new")
-    public String create(@ModelAttribute("newUser") @Valid User newUser,
-                         BindingResult bindingResult, Model model) {
+    public String create(@ModelAttribute("user") User newUser, Model model) {
         model.addAttribute("roles", roleRepository.findAll());
         userService.addUser(newUser);
         return "redirect:/admin";
     }
-//
-//    @GetMapping("/{id}")
-//    public String show(@PathVariable("id") Long id, Model model, Principal principal) {
-//        User user = userService.getById(id);
-//        model.addAttribute("user", user);
-//        model.addAttribute("disabledButtonDelete", (user.getEmail().equals(principal.getName())));
-//        return "/admin/show";
-//    }
-//
-//    @GetMapping("/{id}")
-//    public String edit(Model model, @PathVariable("id") Long id) {
-//        User userEdit = userService.getById(id);
-//        model.addAttribute("userEdit", userEdit);
-//        model.addAttribute("roles", roleRepository.findAll());
-//        System.out.println("_____________________________________________________________________________________________");
-//        System.out.println("edit_____________________________________________________________________________________________");
-//        System.out.println("_____________________________________________________________________________________________");
-//        System.out.println(userEdit);
-//        System.out.println("_____________________________________________________________________________________________");
-//        System.out.println("edit_____________________________________________________________________________________________");
-//        System.out.println("_____________________________________________________________________________________________");
-//        return "/adminPage";
-//    }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") User user) {
-        System.out.println("_____________________________________________________________________________________________");
-        System.out.println("_____________________________________________________________________________________________");
-        System.out.println(user);
-        System.out.println("_____________________________________________________________________________________________");
-        System.out.println("_____________________________________________________________________________________________");
-
-  //      userService.editUser(user);
+    public String update(@ModelAttribute("newUser") User user) {
+        User userEdit = userService.getById(user.getId());
+        user.setPassword(userEdit.getPassword());
+        userService.addUser(user);
         return  "redirect:/admin";
     }
-//
-//    @PatchMapping("/{id}/pass")
-//    public String updatePass(@ModelAttribute("user") User user) {
-//        userService.addUser(user);
-//        return  "redirect:/admin";
-//    }
-//
-//    @GetMapping("/{id}/pass")
-//    public String editPass(Model model, @PathVariable("id") Long id) {
-//        model.addAttribute("user", userService.getById(id));
-//        model.addAttribute("roles", roleRepository.findAll());
-//        return  "/admin/pass";
-//    }
-//
+
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") Long id) {
         userService.delete(id);

@@ -24,6 +24,7 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     @Override
     public void addUser(User user) {
         if(user.getPassword().isEmpty()) {
@@ -39,6 +40,7 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAndFlush(user);
     }
 
+    @Transactional
     @Override
     public void delete(long id) {
         userRepository.deleteById(id);
@@ -50,6 +52,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmail(login);
     }
 
+    @Transactional
     @Override
     public void editUser(User user) {
         userRepository.saveAndFlush(user);

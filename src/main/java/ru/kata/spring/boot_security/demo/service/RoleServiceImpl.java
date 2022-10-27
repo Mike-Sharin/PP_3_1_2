@@ -17,6 +17,7 @@ public class RoleServiceImpl implements RoleService {
         this.roleRepository = roleRepository;
     }
 
+    @Transactional
     @Override
     public void addRole(Role role) {
         roleRepository.saveAndFlush(role);

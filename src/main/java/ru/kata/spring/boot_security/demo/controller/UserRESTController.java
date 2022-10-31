@@ -6,7 +6,7 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 public class UserRESTController {
     private final UserService userService;
 
@@ -14,27 +14,27 @@ public class UserRESTController {
         this.userService = userService;
     }
 
-    @GetMapping("/users")
+    @GetMapping
     public List<User> getAll() {
         return userService.getAll();
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/{id}")
     public User getById(@PathVariable Long id) {
         return userService.getById(id);
     }
 
-    @PostMapping("/users")
+    @PostMapping
     public void addUser(@RequestBody User user) {
         userService.addUser(user);
     }
 
-    @PutMapping("/users")
+    @PutMapping
     public void editUser(@RequestBody User user) {
         userService.addUser(user);
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.delete(id);
     }

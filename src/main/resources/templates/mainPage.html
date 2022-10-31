@@ -84,41 +84,8 @@
                                                 <th scope="col">Delete</th>
                                             </tr>
                                             </thead>
-                                            <tbody>
-                                            <tr th:each="user : ${listUsers}">
-                                                <td th:utext="${user.getId()}">Id</td>
-                                                <td th:utext="${user.getFirstName()}">FirstName</td>
-                                                <td th:utext="${user.getLastName()}">LastName</td>
-                                                <td th:utext="${user.getAge()}">Age</td>
-                                                <td th:utext="${user.getEmail()}">Email</td>
-                                                <td>
-                                                    <span th:each="role, iter : ${user.getRoles()}">
-                                                        <span th:text="${role.getName().replace('ROLE_', '')}">Roles</span><!--
-                                                        --><th:block th:if="${!iter.last}">, </th:block>
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <!-- Кнопка-триггер модального окна -->
-                                                    <button type="button"
-                                                            class="btn btn-info btn-sm"
-                                                            data-toggle="modal"
-                                                            th:data-target="${'#modalEditUser-' + user.id}"
-                                                            th:disabled="${user.getEmail() == authorizedUser.getEmail()}">
-                                                        Edit
-                                                    </button>
-                                                </td>
-                                                <td>
-                                                    <!-- Кнопка-триггер модального окна -->
-                                                    <button type="button"
-                                                            class="btn btn-danger btn-sm buttonModalDeleteUser"
-                                                            role="button"
-                                                            data-toggle="modal"
-                                                            th:data-target="${'#modalDeleteUser-' + user.id}"
-                                                            th:disabled="${user.getEmail() == authorizedUser.getEmail()}">
-                                                        Delete
-                                                    </button>
-                                                </td>
-                                            </tr>
+                                            <tbody id="allUsers">
+
                                             </tbody>
                                         </table>
                                     </div>
@@ -453,9 +420,9 @@
     </div>
 </div>
 
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/scripts.js"></script>
+<!--<script src="js/jquery.min.js"></script>-->
+<!--<script src="js/bootstrap.min.js"></script>-->
+<!--<script src="js/scripts.js"></script>-->
 
 <!-- Вариант 2: Отдельные JS для Popper и Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
@@ -468,6 +435,7 @@
         integrity="sha384-VHvPCCyXqtD5DqJeNxl2dtTyhF78xXNXdkwX1CZeRusQfRKp+tA7hAShOK/B/fQ2"
         crossorigin="anonymous"></script>
 
+<script type="text/javascript" src="/code.js"></script>
 </body>
 
 <script>

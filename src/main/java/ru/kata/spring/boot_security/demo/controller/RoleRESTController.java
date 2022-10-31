@@ -7,7 +7,7 @@ import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/roles")
 public class RoleRESTController {
     private final RoleRepository roleService;
 
@@ -15,12 +15,12 @@ public class RoleRESTController {
         this.roleService = roleService;
     }
 
-    @GetMapping("/roles")
+    @GetMapping
     public List<Role> getAll() {
         return roleService.findAll();
     }
 
-    @GetMapping("/roles/{id}")
+    @GetMapping("/{id}")
     public Role getById(@PathVariable Long id) {
         return roleService.getById(id);
     }

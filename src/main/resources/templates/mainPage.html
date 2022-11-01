@@ -25,7 +25,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-brand" th:color="white" style="visibility: visible;">
-                    <span class="font-weight-bolder" sec:authentication="name">EmailUser</span><!--
+                    <span id="authenticationUser" class="font-weight-bolder" sec:authentication="name">EmailUser</span><!--
                     --><span class="font-weight-normal"> with roles: </span><!--
                     --> <span th:text="${#strings.setJoin(#authentication.getAuthorities(),', ').replace('ROLE_', '')}">g</span>
                 </div>
@@ -85,7 +85,7 @@
                                             </tr>
                                             </thead>
                                             <tbody id="allUsers">
-
+                                            <!--                                            function-->
                                             </tbody>
                                         </table>
                                     </div>
@@ -100,8 +100,7 @@
                                     <div class="container">
                                         <div class="row justify-content-center">
                                             <div class="col-5">
-                                                <form class="was-validated" th:method="POST" th:action="@{/admin/new}"
-                                                      th:object="${newUser}">
+                                                <form id="formNewUser">
                                                     <div class="form-group">
                                                         <p for="newUserId" class="text-center font-weight-bold m-0"
                                                            hidden>ID</p>
@@ -110,7 +109,7 @@
                                                     <div class="form-group">
                                                         <p for="newUserFirstName"
                                                            class="text-center font-weight-bold m-0">First name</p>
-                                                        <input type="text" class="form-control" th:field="*{firstName}"
+                                                        <input type="text" class="form-control"
                                                                id="newUserFirstName"
                                                                placeholder="First name"
                                                                required minlength="3" maxlength="30"/>
@@ -121,7 +120,7 @@
                                                     <div class="form-group">
                                                         <p for="newUserLastName"
                                                            class="text-center font-weight-bold m-0">Last name</p>
-                                                        <input type="text" class="form-control" th:field="*{lastName}"
+                                                        <input type="text" class="form-control"
                                                                id="newUserLastName"
                                                                placeholder="Last name"
                                                                required minlength="3" maxlength="30"/>
@@ -132,7 +131,7 @@
                                                     <div class="form-group">
                                                         <p for="newUserAge" class="text-center font-weight-bold m-0">
                                                             Age</p>
-                                                        <input type="number" class="form-control" th:field="*{age}"
+                                                        <input type="number" class="form-control"
                                                                id="newUserAge"
                                                                placeholder="Age"
                                                                required th:min="10" th:max="90"/>
@@ -143,7 +142,7 @@
                                                     <div class="form-group">
                                                         <p for="newUserEmail" class="text-center font-weight-bold m-0">
                                                             Email</p>
-                                                        <input type="email" class="form-control" th:field="*{email}"
+                                                        <input type="email" class="form-control"
                                                                id="newUserEmail"
                                                                placeholder="Email"
                                                                required/>
@@ -155,7 +154,7 @@
                                                         <p for="newUserPassword"
                                                            class="text-center font-weight-bold m-0">Password</p>
                                                         <input type="password" class="form-control"
-                                                               th:field="*{password}" id="newUserPassword"
+                                                               id="newUserPassword"
                                                                placeholder="Password"
                                                                required/>
                                                         <div class="invalid-feedback">
@@ -165,21 +164,20 @@
                                                     <div class="form-group">
                                                         <p for="newUserRoles" class="text-center font-weight-bold m-0">
                                                             Role</p>
-                                                        <select multiple class="form-control" size="3"
-                                                                th:field="*{roles}" required>
-                                                            <option name="newUserRoles" id="newUserRoles"
-                                                                    th:each="role : ${listRoles}"
-                                                                    th:text="${role.getName().replace('ROLE_', '')}"
-                                                                    th:value="${role.getId()}">Roles
-                                                            </option>
+                                                        <select id="newUserRoles" multiple class="form-control" size="3"
+                                                                required>
+                                                            <!--                                                            function  -->
                                                         </select>
                                                         <div class="invalid-feedback">
                                                             Please select a role
                                                         </div>
                                                     </div>
                                                     <div class="row justify-content-center m-3">
-                                                        <input type="submit" class="btn btn-success btn-lg"
-                                                               value="Add new user"/>
+                                                        <button id="buttonNew"
+                                                                type="submit"
+                                                                class="btn btn-success btn-lg btnNew">
+                                                            Add new user
+                                                        </button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -212,7 +210,7 @@
                                             </tr>
                                             </thead>
                                             <tbody id="authorizedUser">
-<!--                                                finction  -->
+                                            <!--                                                function  -->
                                             </tbody>
                                         </table>
                                     </div>
@@ -367,13 +365,8 @@
                                 </div>
                                 <div class="form-group">
                                     <p for="deleteUserRoles" class="text-center font-weight-bold m-0">Role</p>
-                                    <select multiple class="form-control" size="3"
-                                            disabled="false"
-                                            id="deleteUserRoles">
-<!--                                        <option th:each="role : ${user.getRoles()}">-->
-<!--                                               <span th:text="${role.getName().replace('ROLE_', '')}"-->
-<!--                                                     th:value="${role.getId()}">Roles</span>-->
-<!--                                        </option>-->
+                                    <select id="deleteUserRoles" multiple class="form-control" size="3"
+                                            disabled="false">
                                     </select>
                                 </div>
                             </div>
@@ -388,11 +381,6 @@
         </div>
     </div>
 </div>
-
-
-<!--<script src="js/jquery.min.js"></script>-->
-<!--<script src="js/bootstrap.min.js"></script>-->
-<!--<script src="js/scripts.js"></script>-->
 
 <!-- Вариант 2: Отдельные JS для Popper и Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"

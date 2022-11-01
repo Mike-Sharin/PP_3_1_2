@@ -162,7 +162,6 @@ formEditUser.addEventListener('submit', (e) => {
             }
         }
     }
-    console.log(selectedRoles)
 
     fetch(urlUsers, {
         method: 'PUT',
@@ -177,9 +176,7 @@ formEditUser.addEventListener('submit', (e) => {
             roles:  selectedRoles
         })
     })
-     //   .then( response => response.json())
         .then( response => location.reload())
-    console.log("Edit")
 
     $('#modalEditUser').modal('hide')
 })
@@ -207,15 +204,7 @@ formDeleteUser.addEventListener('submit', (e) => {
     fetch(urlUsers + id, {
         method : 'DELETE'
         })
-    //    .then( res => res.json())
         .then( response => location.reload())
-        // .then( data => {
-        //     const listUser = []
-        //     listUser.push(data)
-        //     listUsers(listUser)
-        // })
-
-    console.log("Delete")
 
     $('#modalDeleteUser').modal('hide')
 });
@@ -247,6 +236,5 @@ formNewUser.addEventListener('submit', (e) => {
             roles: selectedRoles
         })
     })
-        //   .then( response => response.json())
         .then(response => location.reload())
 });

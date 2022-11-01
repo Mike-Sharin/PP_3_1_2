@@ -23,30 +23,42 @@ public class AuthorizedUserController {
 
     @GetMapping()
     public String listUsers(Model model, Principal principal){
-        model.addAttribute("listUsers", userService.getAll());
-        model.addAttribute("listRoles", roleRepository.findAll());
-        model.addAttribute("authorizedUser", userService.getByEmail(principal.getName()));
+//        model.addAttribute("listUsers", userService.getAll());
+//        model.addAttribute("listRoles", roleRepository.findAll());
+//        model.addAttribute("authorizedUser", userService.getByEmail(principal.getName()));
         model.addAttribute("newUser", new User());
+        System.out.println("_________________________________________________________________________________________");
+        System.out.println("AuthorizedUserController-listUsers ");
+        System.out.println("_________________________________________________________________________________________");
 
         return "mainPage";
     }
-
-    @PostMapping("/new")
-    public String create(@ModelAttribute("user") User newUser, Model model) {
-        model.addAttribute("roles", roleRepository.findAll());
-        userService.addUser(newUser);
-        return "redirect:/admin";
-    }
-
-    @PatchMapping("/{id}")
-    public String update(@ModelAttribute("newUser") User user) {
-        userService.addUser(user);
-        return  "redirect:/admin";
-    }
-
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") Long id) {
-        userService.delete(id);
-        return "redirect:/admin";
-    }
+//
+//    @PostMapping("/new")
+//    public String create(@ModelAttribute("user") User newUser, Model model) {
+//        model.addAttribute("roles", roleRepository.findAll());
+//        userService.addUser(newUser);
+//        System.out.println("_________________________________________________________________________________________");
+//        System.out.println("AuthorizedUserController-create ");
+//        System.out.println("_________________________________________________________________________________________");
+//        return "redirect:/admin";
+//    }
+//
+//    @PatchMapping("/{id}")
+//    public String update(@ModelAttribute("newUser") User user) {
+//        userService.addUser(user);
+//        System.out.println("_________________________________________________________________________________________");
+//        System.out.println("AuthorizedUserController-update ");
+//        System.out.println("_________________________________________________________________________________________");
+//        return  "redirect:/admin";
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    public String delete(@PathVariable("id") Long id) {
+//        userService.delete(id);
+//        System.out.println("_________________________________________________________________________________________");
+//        System.out.println("AuthorizedUserController-delete ");
+//        System.out.println("_________________________________________________________________________________________");
+//        return "redirect:/admin";
+//    }
 }

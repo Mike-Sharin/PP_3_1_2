@@ -21,7 +21,7 @@
         <div class="col-md-4 ">
 
             <form method="POST" class="dropdown p-5 bg-light">
-                <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+<!--                <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>-->
                 <div class="alert alert-info" role="alert" th:if="${logout}" > You've been logged out successfully</div>
                 <div class="alert alert-danger" role="alert" th:if="${error}"> Invalid Email or Password</div>
                 <div class="form-group">

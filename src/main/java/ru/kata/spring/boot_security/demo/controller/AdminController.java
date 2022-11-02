@@ -8,12 +8,12 @@ import ru.kata.spring.boot_security.demo.service.UserService;
 
 @Controller
 @RequestMapping("/admin")
-public class AuthorizedUserController {
+public class AdminController {
     private final UserService userService;
     private final RoleRepository roleRepository;
 
     @Autowired
-    public AuthorizedUserController(UserService userService, RoleRepository roleRepository) {
+    public AdminController(UserService userService, RoleRepository roleRepository) {
         this.userService = userService;
         this.roleRepository = roleRepository;
     }

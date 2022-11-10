@@ -15,15 +15,10 @@ public class UserRESTController {
         this.userService = userService;
     }
 
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping
     public List<User> getAll() {
         return userService.getAll();
-    }
-
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @GetMapping("/{id}")
-    public User getById(@PathVariable Long id) {
-        return userService.getById(id);
     }
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -42,5 +37,10 @@ public class UserRESTController {
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.delete(id);
+    }
+
+    @GetMapping("/{email}")
+    public User findUser(@PathVariable String email) {
+        return userService.findUser(email);
     }
 }

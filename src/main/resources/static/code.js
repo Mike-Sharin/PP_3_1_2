@@ -11,7 +11,7 @@ fetch(urlUsers)
 
 fetch(urlUsers)
     .then(response => response.json())
-    .then(data => authorizedUsers(data))
+    .then(() => authorizedUser())
     .catch(error => console.log(error))
 
 fetch(urlRoles)
@@ -56,7 +56,7 @@ const listUsers = (users) => {
                 </tr>`
     })
 
-    if(!(containerAllUsers === null)) {
+    if (!(containerAllUsers === null)) {
         containerAllUsers.innerHTML = result
     }
 }
@@ -76,7 +76,7 @@ const listRoles = (roles, list, operation) => {
         result += `<option name="roles" 
                             text="${role.name.replace('ROLE_', '')}"
                             value="${role.id}"` +
-                            selected + `>                            
+            selected + `>                            
                         ${role.name.replace('ROLE_', '')}
                     </option>`
     })
@@ -95,39 +95,39 @@ const listRoles = (roles, list, operation) => {
             break;
     }
 
-    if(!(container === null)) {
+    if (!(container === null)) {
         container.innerHTML = result
     }
 }
 
-const authorizedUsers = (users) => {
+const authorizedUser = () => {
     let result = ''
+    var email = document.getElementById('authenticationUser').innerHTML;
 
-    users.forEach(user => {
-        let result1 = '';
-
-        if (document.getElementById('authenticationUser').innerHTML === user.email) {
-
-            user.roles.forEach(role => {
-                result1 += `${role.name.replace('ROLE_', '')} `
+    fetch(urlUsers + email, {method: 'GET'})
+        .then(response => response.json())
+        .then((autUser) => {
+            autUser.roles.forEach(role => {
+                result += `${role.name.replace('ROLE_', '')} `
             })
 
             result = `<tr>
-                    <td>${user.id}</td>
-                    <td>${user.firstName}</td>
-                    <td>${user.lastName}</td>
-                    <td>${user.age}</td>
-                    <td>${user.email}</td>                    
-                    <td>` + result1 + `</td>   
-                </tr>`
-        }
-    })
-    containerAuthorizedUser.innerHTML = result
+                                             <td>${autUser.id}</td>
+                                             <td>${autUser.firstName}</td>
+                                             <td>${autUser.lastName}</td>
+                                             <td>${autUser.age}</td>
+                                             <td>${autUser.email}</td>
+                                             <td>` + result + `</td>
+                                        </tr>`
+
+            containerAuthorizedUser.innerHTML = result
+        })
+        .catch(error => console.log(error))
 }
 
 const on = (element, event, selector, handler) => {
     element.addEventListener(event, e => {
-        if(e.target.closest(selector)){
+        if (e.target.closest(selector)) {
             handler(e)
         }
     })
@@ -143,7 +143,7 @@ on(document, 'click', '.btnEdit', e => {
 
     fetch(urlRoles)
         .then(response => response.json())
-        .then(data => listRoles(data, fila.children[5].innerHTML , "edit"))
+        .then(data => listRoles(data, fila.children[5].innerHTML, "edit"))
         .catch(error => console.log(error))
 
     $('#modalEditUser').modal('show')
@@ -165,7 +165,7 @@ formEditUser.addEventListener('submit', (e) => {
 
     fetch(urlUsers, {
         method: 'PUT',
-        headers: { 'Content-Type' : 'application/json'},
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
             id: editUserId.value,
             firstName: editUserFirstName.value,
@@ -173,10 +173,10 @@ formEditUser.addEventListener('submit', (e) => {
             age: editUserAge.value,
             password: editUserPassword.value,
             email: editUserEmail.value,
-            roles:  selectedRoles
+            roles: selectedRoles
         })
     })
-        .then( response => location.reload())
+        .then(() => location.reload())
 
     $('#modalEditUser').modal('hide')
 })
@@ -202,9 +202,9 @@ formDeleteUser.addEventListener('submit', (e) => {
     const id = deleteUserId.value
 
     fetch(urlUsers + id, {
-        method : 'DELETE'
-        })
-        .then( response => location.reload())
+        method: 'DELETE'
+    })
+        .then(() => location.reload())
 
     $('#modalDeleteUser').modal('hide')
 });
@@ -236,5 +236,5 @@ formNewUser.addEventListener('submit', (e) => {
             roles: selectedRoles
         })
     })
-        .then(response => location.reload())
+        .then(() => location.reload())
 });
